@@ -7,20 +7,24 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
 import java.lang.RuntimeException
 
-class ShopListAdapter: RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
-    var count: Int = 0
-    var shopItemList = listOf<ShopItem>()
-        set(value) {
-            val callback = ShopListDiffCallback(shopItemList, value)
-            val diffResult = DiffUtil.calculateDiff(callback) //производится сравнение двух массивов
-            diffResult.dispatchUpdatesTo(this)
-            field = value
-        }
+class ShopListAdapter: ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
+
+//    var count: Int = 0
+
+// 1-й метод сравнения списков при изменении элементов recyclerView
+//    var shopItemList = listOf<ShopItem>()
+//        set(value) {
+//            val callback = ShopListDiffCallback(shopItemList, value)
+//            val diffResult = DiffUtil.calculateDiff(callback) //производится сравнение двух массивов
+//            diffResult.dispatchUpdatesTo(this)
+//            field = value
+//        }
 
     var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null
     var onShopItemClickListener: ((ShopItem) -> Unit)? = null
@@ -36,8 +40,9 @@ class ShopListAdapter: RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>(
     }
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
-        Log.d("onBindViewHolder", "${++count}")
-        val shopItem = shopItemList[position]
+//        Log.d("onBindViewHolder", "${++count}")
+//        val shopItem = shopItemList[position]
+        val shopItem = getItem(position)
         holder.view.setOnLongClickListener {
             onShopItemLongClickListener?.invoke(shopItem)
             true
@@ -50,12 +55,12 @@ class ShopListAdapter: RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>(
         holder.tvName.setTextColor(ContextCompat.getColor(holder.view.context, android.R.color.holo_red_dark))
     }
 
-    override fun getItemCount(): Int {
-        return shopItemList.size
-    }
+//    override fun getItemCount(): Int {
+//        return shopItemList.size
+//    }
 
     override fun getItemViewType(position: Int): Int {
-        val view = shopItemList[position]
+        val view = getItem(position)
         return if (view.enabled) {
             VIEW_TYPE_ENABLED
         } else {
@@ -63,21 +68,21 @@ class ShopListAdapter: RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>(
         }
     }
 
-    override fun onViewRecycled(holder: ShopItemViewHolder) {
-        super.onViewRecycled(holder)
-        holder.tvName.text = ""
-        holder.tvCount.text = ""
-        holder.tvName.setTextColor(ContextCompat.getColor(holder.view.context, android.R.color.white))
-    }
+//    override fun onViewRecycled(holder: ShopItemViewHolder) {
+//        super.onViewRecycled(holder)
+//        holder.tvName.text = ""
+//        holder.tvCount.text = ""
+//        holder.tvName.setTextColor(ContextCompat.getColor(holder.view.context, android.R.color.white))
+//    }
 
-    class ShopItemViewHolder(val view: View): RecyclerView.ViewHolder (view) {
-        val tvName = view.findViewById<TextView>(R.id.tv_name)
-        val tvCount = view.findViewById<TextView>(R.id.tv_count)
-    }
+//    class ShopItemViewHolder(val view: View): RecyclerView.ViewHolder (view) {
+//        val tvName = view.findViewById<TextView>(R.id.tv_name)
+//        val tvCount = view.findViewById<TextView>(R.id.tv_count)
+//    }
 
-    interface OnShopItemLongClickListener {
-        fun onShopItemLongClick(shopItem: ShopItem)
-    }
+//    interface OnShopItemLongClickListener {
+//        fun onShopItemLongClick(shopItem: ShopItem)
+//    }
 
     companion object {
         const val VIEW_TYPE_ENABLED = 100
