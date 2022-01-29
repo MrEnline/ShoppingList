@@ -34,9 +34,10 @@ class ShopItemFragment(): Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        parseParams()
+        parseParams()   //желательно проверить все данные до полного создания фрагмента как в данном случае
     }
 
+    //метод для создания view на основе макета
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,7 +46,8 @@ class ShopItemFragment(): Fragment() {
         return inflater.inflate(R.layout.fragment_shop_item, container, false)  //создадим view на основе fragment из xml
     }
 
-    //после того как view создастся в методе onCreateView и с ней можно будет работать, ссылка на нее передастся в этот метод
+    //после того как view создастся в методе onCreateView и с ней можно будет работать,
+    // ссылка на нее передастся в этот метод
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         shopItemViewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
@@ -60,7 +62,7 @@ class ShopItemFragment(): Fragment() {
     //т.к. жизненный цикл view и fragment отличается и view может закончить существование раньше
     fun observeCloseScreen() {
         shopItemViewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            activity?.onBackPressed() //закрывается окно активити, когда нажата кнопка назад
         }
     }
 
