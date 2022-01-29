@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                 val intent = ShopItemActivity.addNewIntentItem(this)
                 startActivity(intent)
             } else {
-                launchFragment(ShopItemFragment.addNewFragmentItem())
+                launchFragment(ShopItemFragment.addNewFragmentItem(), "add")
             }
         }
     }
@@ -52,14 +53,22 @@ class MainActivity : AppCompatActivity() {
         return shopItemContainer == null
     }
 
-    private fun launchFragment(fragment: Fragment) {
-        supportFragmentManager.popBackStack() //удаляет ссылки на предыдущие фрагменты из бэкстэка
+    private fun launchFragment(fragment: Fragment, name: String) {
+
         //управление добавлением фрагмента на экран активити c помощью менеджера фрагментов
         supportFragmentManager.beginTransaction()
             //.add(R.id.shop_item_container, fragment)   //добавляем в контейнер созданный фрагмент выше
             .replace(R.id.shop_item_container, fragment) //вместо add лучше использовать replace, чтобы в контейнере не увеличивалось количество фрагментов
-            .addToBackStack(null) //добавляет ссылку на фрагмент в бэкстэк
+            .addToBackStack(name) //добавляет ссылку на фрагмент в бэкстэк
             .commit()
+    }
+
+    override fun onBackPressed() {
+        //удаляет ссылки на предыдущие фрагменты из бэкстэка до фрагмента с именем add, если
+        //второй параметр равен 0
+        //если второй параметр равен FragmentManager.POP_BACK_STACK_INCLUSIVE, тот удалит и его
+        //но если после него есть в бэкстэке еще ссылки на фрагменты, то отобразится последний
+        supportFragmentManager.popBackStack("add", FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     private fun setupRecyclerView() {
@@ -106,7 +115,7 @@ class MainActivity : AppCompatActivity() {
                 val intent = ShopItemActivity.editNewIntentItem(this, it.id)
                 startActivity(intent)
             } else {
-               launchFragment(ShopItemFragment.editNewFragmentItem(it.id))
+               launchFragment(ShopItemFragment.editNewFragmentItem(it.id), "edit")
             }
         }
     }
