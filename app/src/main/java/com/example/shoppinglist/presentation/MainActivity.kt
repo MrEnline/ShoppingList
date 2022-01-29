@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModel
@@ -17,7 +18,7 @@ import com.example.shoppinglist.R
 import com.example.shoppinglist.domain.ShopItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFinishedListener {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
@@ -45,6 +46,11 @@ class MainActivity : AppCompatActivity() {
                 launchFragment(ShopItemFragment.addNewFragmentItem())
             }
         }
+    }
+    //данный метод вызывается в классе фрагмента после нажатия кнопки Save
+    override fun onEditingFinished() {
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
+        supportFragmentManager.popBackStack() //удаляем ссылку на фрагмент из бэкстэка
     }
 
     //если экран не перевернут, тогда режим однопанельный

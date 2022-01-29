@@ -20,6 +20,8 @@ class ShopItemFragment(): Fragment() {
 
     private lateinit var shopItemViewModel: ShopItemViewModel
 
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
+
     private lateinit var tilName: TextInputLayout
     private lateinit var tilCount: TextInputLayout
     private lateinit var etName: EditText
@@ -35,6 +37,17 @@ class ShopItemFragment(): Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         parseParams()   //желательно проверить все данные до полного создания фрагмента как в данном случае
+    }
+
+    //данный метод вызывается, когда фрагмент привязывается к Активити
+    //в нем желательно привязывать интерфейсы
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishedListener) {
+            onEditingFinishedListener = context
+        }else {
+            throw RuntimeException("Don't impelements interface OnEditingFinishedListener")
+        }
     }
 
     //метод для создания view на основе макета
@@ -62,7 +75,9 @@ class ShopItemFragment(): Fragment() {
     //т.к. жизненный цикл view и fragment отличается и view может закончить существование раньше
     fun observeCloseScreen() {
         shopItemViewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed() //закрывается окно активити, когда нажата кнопка назад
+            onEditingFinishedListener.onEditingFinished()
+            //метод ниже не нужен, потому что в onEditingFinished() вызывается popBackStack
+            //activity?.onBackPressed() //закрывается окно активити, когда нажата кнопка назад
         }
     }
 
@@ -188,6 +203,10 @@ class ShopItemFragment(): Fragment() {
                     putInt(SHOP_ITEM_ID, shopItemId)
                 }
             }
+        }
+
+        interface  OnEditingFinishedListener {
+            fun onEditingFinished()
         }
     }
 }
