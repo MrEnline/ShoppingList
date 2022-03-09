@@ -50,7 +50,7 @@ class ShopItemFragment(): Fragment() {
         }
     }
 
-    //метод для создания view на основе макета
+    //метод для создания view на основе макета(layout)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,6 +69,42 @@ class ShopItemFragment(): Fragment() {
         launchRightMode()
         observeErrorInput()
         observeCloseScreen()
+    }
+
+    fun initViews(view: View) {
+        tilName = view.findViewById(R.id.til_name)
+        tilCount = view.findViewById(R.id.til_count)
+        etName = view.findViewById(R.id.et_name)
+        etCount = view.findViewById(R.id.et_count)
+        buttonSave = view.findViewById(R.id.save_button)
+    }
+
+    fun addTextChangeListener() {
+        etName.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                shopItemViewModel.resetInputErrorName()
+            }
+
+            override fun afterTextChanged(p0: Editable?) {}
+        })
+        etCount.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                shopItemViewModel.resetInputErrorCount()
+            }
+
+            override fun afterTextChanged(p0: Editable?) {}
+        })
+    }
+
+    fun launchRightMode() {
+        when(screenMode) {
+            MODE_ADD -> launchAddMode()
+            MODE_EDIT -> launchEditMode()
+        }
     }
 
     //в качестве параметра метода observe передаем жизненный цикл созданной выше view
@@ -100,44 +136,14 @@ class ShopItemFragment(): Fragment() {
         }
     }
 
-    fun launchRightMode() {
-        when(screenMode) {
-            MODE_ADD -> launchAddMode()
-            MODE_EDIT -> launchEditMode()
+    fun launchAddMode() {
+        buttonSave.setOnClickListener {
+            shopItemViewModel.addShopItem(etName.text?.toString(), etCount.text?.toString())
         }
     }
 
-    fun addTextChangeListener() {
-        etName.addTextChangedListener(object: TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                shopItemViewModel.resetInputErrorName()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-        })
-        etCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                shopItemViewModel.resetInputErrorCount()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-
-            }
-        })
-    }
-
     fun launchEditMode() {
-        //передаем id для получения элемента
+        //передаем id для получения элемента из data-слоя
         shopItemViewModel.getShopItem(shopItemId)
         //подписываемся на этот элемент и по изменению выполняем действия в фигурных скобках
         shopItemViewModel.shopItem.observe(viewLifecycleOwner){
@@ -147,20 +153,6 @@ class ShopItemFragment(): Fragment() {
         buttonSave.setOnClickListener {
             shopItemViewModel.editShopItem(etName.text?.toString(), etCount.text?.toString())
         }
-    }
-
-    fun launchAddMode() {
-        buttonSave.setOnClickListener {
-            shopItemViewModel.addShopItem(etName.text?.toString(), etCount.text?.toString())
-        }
-    }
-
-    fun initViews(view: View) {
-        tilName = view.findViewById(R.id.til_name)
-        tilCount = view.findViewById(R.id.til_count)
-        etName = view.findViewById(R.id.et_name)
-        etCount = view.findViewById(R.id.et_count)
-        buttonSave = view.findViewById(R.id.save_button)
     }
 
     fun parseParams() {

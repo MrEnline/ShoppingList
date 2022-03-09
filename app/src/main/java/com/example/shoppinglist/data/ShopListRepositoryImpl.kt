@@ -45,7 +45,7 @@ object ShopListRepositoryImpl: ShopListRepository {
     }
 
     override fun getShopList(): LiveData<List<ShopItem>> {
-        shopListLiveData.value = shopList.toList()
+        updateList()
         return shopListLiveData
     }
 

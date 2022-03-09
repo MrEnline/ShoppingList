@@ -8,6 +8,7 @@ import com.example.shoppinglist.data.ShopListRepositoryImpl
 import com.example.shoppinglist.domain.*
 import java.util.*
 
+//ViewModel работает с domain-слоем и обрабатывает логику на экране - ошибки ввода данных
 class ShopItemViewModel: ViewModel() {
     private val shopListRepository = ShopListRepositoryImpl
 
@@ -15,7 +16,10 @@ class ShopItemViewModel: ViewModel() {
     private val addShopItemUseCase = AddShopItemUseCase(shopListRepository)
     private val editShopItemUseCase = EditShopItemUseCase(shopListRepository)
 
-    //таким способом создают переменную, которую можно будет редактировать в другом классе
+    //т.к. нам надо изменять значения в данном классе, то сделаем мутабельной _errorInputName
+    //для того чтобы работать с ней
+    //но если нам надо, чтобы ее можно было получить в другом классе и при этом нельзя было бы изменить
+    //для этого создадим errorInputName немутабельным и будем возвращать для нее _errorInputName
     private val _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>   //переменная типа LiveData. На нее будем подписываться из Activity
         get() = _errorInputName
@@ -92,15 +96,15 @@ class ShopItemViewModel: ViewModel() {
         return result
     }
 
-    public fun resetInputErrorName() {
+    fun resetInputErrorName() {
         _errorInputName.value = false
     }
 
-    public fun resetInputErrorCount() {
+    fun resetInputErrorCount() {
         _errorInputCount.value = false
     }
 
-    public fun finishWork() {
+    fun finishWork() {
         _shouldCloseScreen.value = Unit
     }
 }

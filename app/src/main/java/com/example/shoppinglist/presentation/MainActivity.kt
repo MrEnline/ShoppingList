@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFi
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         shopItemContainer = findViewById(R.id.shop_item_container)
-
         setupRecyclerView()
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
@@ -38,7 +37,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFi
         }
         val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
         buttonAddItem.setOnClickListener {
-
             if (isOnePanelMode()) {
                 val intent = ShopItemActivity.addNewIntentItem(this)
                 startActivity(intent)
@@ -82,28 +80,24 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFi
     }
 
     private fun setupSwipeListener(rvShopList: RecyclerView) {
-        val callback = object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.LEFT
-                    or
-                    ItemTouchHelper.RIGHT
-        ) {
+        val callback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT
+                                                                or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
+                target: RecyclerView.ViewHolder): Boolean {
                 TODO("Not yet implemented")
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                //val item = shopListAdapter.shopItemList[viewHolder.adapterPosition]
-                val item = shopListAdapter.currentList[viewHolder.adapterPosition]
-                viewModel.deleteShopItem(item)
+                //val item = shopListAdapter.shopItemList[viewHolder.adapterPosition]   //старая реализация
+                val item = shopListAdapter.currentList[viewHolder.adapterPosition]  //получаем объект, который свайпаем
+                viewModel.deleteShopItem(item)  //удаляем из данных элемент, который свайпнули
             }
         }
 
         val itemTouchHelper = ItemTouchHelper(callback)
-        itemTouchHelper.attachToRecyclerView(rvShopList)
+        itemTouchHelper.attachToRecyclerView(rvShopList)    //прикрепляем данную реализацию к RecyclerView
     }
 
     private fun setupClickListener() {
