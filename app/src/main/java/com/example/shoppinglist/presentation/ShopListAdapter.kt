@@ -30,6 +30,7 @@ class ShopListAdapter: ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCal
     var onShopItemClickListener: ((ShopItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
+        //на основе viewType, который передается из метода getItemViewType создаем view из макета
         val layout = when (viewType) {
             VIEW_TYPE_ENABLED -> R.layout.item_shop_enabled
             VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
