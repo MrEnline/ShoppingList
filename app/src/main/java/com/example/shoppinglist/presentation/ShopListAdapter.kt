@@ -6,11 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
 import com.example.shoppinglist.databinding.ItemShopDisabledBinding
+import com.example.shoppinglist.databinding.ItemShopEnabledBinding
 import com.example.shoppinglist.domain.ShopItem
 import java.lang.RuntimeException
 
@@ -37,8 +40,9 @@ class ShopListAdapter: ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCal
             VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
             else -> throw RuntimeException("Unknown viewType: ${viewType}")
         }
-        val binding = ItemShopDisabledBinding.inflate(
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
             LayoutInflater.from(parent.context),
+            layout,
             parent,
             false
         )
@@ -57,14 +61,15 @@ class ShopListAdapter: ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCal
         binding.root.setOnClickListener {
             onShopItemClickListener?.invoke((shopItem))
         }
-        binding.tvName.text = "${shopItem.name}"
-        binding.tvCount.text = "${shopItem.count}"
-        binding.tvName.setTextColor(ContextCompat.getColor(binding.root.context, android.R.color.holo_red_dark))
+        when(binding) {
+            is ItemShopDisabledBinding -> {
+                binding.shopItem = shopItem
+            }
+            is ItemShopEnabledBinding -> {
+                binding.shopItem = shopItem
+            }
+        }
     }
-
-//    override fun getItemCount(): Int {
-//        return shopItemList.size
-//    }
 
     override fun getItemViewType(position: Int): Int {
         val view = getItem(position)
