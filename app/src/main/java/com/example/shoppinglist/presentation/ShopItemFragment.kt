@@ -43,7 +43,7 @@ class ShopItemFragment(): Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnEditingFinishedListener) {
-            onEditingFinishedListener = context
+            onEditingFinishedListener = context //по сути ссылка на активити, к которому привязывается фрагмент
         }else {
             throw RuntimeException("Don't impelements interface OnEditingFinishedListener")
         }
@@ -104,7 +104,7 @@ class ShopItemFragment(): Fragment() {
     //т.к. жизненный цикл view и fragment отличается и view может закончить существование раньше
     fun observeCloseScreen() {
         shopItemViewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            onEditingFinishedListener.onEditingFinished()
+            onEditingFinishedListener.onEditingFinished()   //вызываем в активити метод закрытия активити
             //метод ниже не нужен, потому что в onEditingFinished() вызывается popBackStack
             //activity?.onBackPressed() //закрывается окно активити, когда нажата кнопка назад
         }
