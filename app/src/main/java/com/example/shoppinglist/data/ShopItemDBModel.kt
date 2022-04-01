@@ -2,8 +2,9 @@ package com.example.shoppinglist.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.shoppinglist.domain.ShopItem
 
+//данный класс создан по причине того, что domain слой является самым независимым и
+//ничего не должен знать про data-слой
 @Entity(tableName = "shop_items")
 data class ShopItemDBModel(
     @PrimaryKey(autoGenerate = true)
