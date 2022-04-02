@@ -1,20 +1,25 @@
 package com.example.shoppinglist.presentation
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.shoppinglist.data.ShopListRepositoryImpl
 import com.example.shoppinglist.domain.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.util.*
 
 //ViewModel работает с domain-слоем и обрабатывает логику на экране - ошибки ввода данных
-class ShopItemViewModel: ViewModel() {
-    private val shopListRepository = ShopListRepositoryImpl
+class ShopItemViewModel(application: Application): AndroidViewModel(application) {
+    private val shopListRepository = ShopListRepositoryImpl(application)
 
     private val getShopItemUseCase = GetShopItemUseCase(shopListRepository)
     private val addShopItemUseCase = AddShopItemUseCase(shopListRepository)
     private val editShopItemUseCase = EditShopItemUseCase(shopListRepository)
+
+    //private val scope = CoroutineScope(Dispatchers.IO)    //можем создавать свой scope для работы с корутинами
 
     //т.к. нам надо изменять значения в данном классе, то сделаем мутабельной _errorInputName
     //для того чтобы работать с ней
@@ -41,8 +46,10 @@ class ShopItemViewModel: ViewModel() {
         val count = parseCount(inputCount)
         val fieldValidate = validateInput(name, count)
         if (fieldValidate){
-            addShopItemUseCase.addShopItem(ShopItem(name, count, true))
-            finishWork()
+            viewModelScope.launch {
+                addShopItemUseCase.addShopItem(ShopItem(name, count, true))
+                finishWork()
+            }
         }
     }
 
@@ -53,21 +60,20 @@ class ShopItemViewModel: ViewModel() {
         if (fieldValidate){
             //будем получать объект для редактирования из MutableLiveData и создавать копию для редактирования
             _shopItem.value?.let {
-                val item = it.copy(name = name, count = count)
-                editShopItemUseCase.editShopItem(item)
-                finishWork()
+                viewModelScope.launch {
+                    val item = it.copy(name = name, count = count)
+                    editShopItemUseCase.editShopItem(item)
+                    finishWork()
+                }
             }
         }
     }
 
     fun getShopItem(shopItemId: Int) {
-        val item = getShopItemUseCase.getItemInShop(shopItemId)
-        _shopItem.value = item
-    }
-
-    fun changeEnableState(shopItem: ShopItem) {
-        val newItem = shopItem.copy(enabled = !shopItem.enabled)
-        editShopItemUseCase.editShopItem(newItem)
+        viewModelScope.launch {
+            val item = getShopItemUseCase.getItemInShop(shopItemId)
+            _shopItem.value = item
+        }
     }
 
     fun parseName(inputName: String?): String {
@@ -105,6 +111,13 @@ class ShopItemViewModel: ViewModel() {
     }
 
     fun finishWork() {
+        //_shouldCloseScreen.value = Unit
         _shouldCloseScreen.value = Unit
     }
+
+    //при наличии viewMovelScope данный метод не нужен, т.к. viewModelScope будет отменяться автоматически
+//    override fun onCleared() {
+//        super.onCleared()
+//        scope.cancel()
+//    }
 }
